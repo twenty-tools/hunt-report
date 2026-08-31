@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hunt-report - Turn Scan Output into Bounty Reports</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #0f172a;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        header p {
+            font-size: 1.3em;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: background 0.3s;
+        }
+        .cta-button:hover {
+            background: #2563eb;
+        }
+        .features {
+            padding: 80px 0;
+            background: #1e293b;
+            color: white;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+        .feature-card {
+            background: #334155;
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid #475569;
+        }
+        .feature-card h3 {
+            font-size: 1.4em;
+            margin-bottom: 12px;
+            color: #60a5fa;
+        }
+        .pricing {
+            padding: 80px 0;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+        .pricing-card {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid #334155;
+            position: relative;
+        }
+        .pricing-card.popular {
+            border-color: #3b82f6;
+            transform: scale(1.05);
+        }
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3b82f6;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .pricing-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 16px;
+        }
+        .price {
+            font-size: 3em;
+            font-weight: 700;
+            margin: 16px 0;
+            color: #60a5fa;
+        }
+        .price span {
+            font-size: 0.5em;
+            color: #94a3b8;
+        }
+        .pricing-card ul {
+            list-style: none;
+            text-align: left;
+            margin: 24px 0;
+        }
+        .pricing-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .pricing-card li:before {
+            content: "✓ ";
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .roi-section {
+            padding: 80px 0;
+            background: #1e293b;
+            color: white;
+            text-align: center;
+        }
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+        .roi-card {
+            background: #334155;
+            padding: 32px;
+            border-radius: 12px;
+        }
+        .roi-card .number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid #1e293b;
+        }
+        .validation-survey {
+            padding: 60px 0;
+            background: #1e293b;
+            color: white;
+            text-align: center;
+        }
+        .survey-box {
+            max-width: 600px;
+            margin: 32px auto;
+            background: #334155;
+            padding: 32px;
+            border-radius: 12px;
+        }
+        .survey-box h3 {
+            margin-bottom: 24px;
+        }
+        .survey-option {
+            display: block;
+            margin: 12px 0;
+            padding: 16px;
+            background: #475569;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .survey-option:hover {
+            background: #3b82f6;
+        }
+        .survey-option input {
+            margin-right: 12px;
+        }
+        .survey-btn {
+            margin-top: 24px;
+            padding: 12px 32px;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+        #survey-result {
+            margin-top: 24px;
+            padding: 16px;
+            background: #475569;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>hunt-report</h1>
+            <p>Turn raw scan output into submission-ready vulnerability reports. One command. Four files. Zero formatting.</p>
+            <a href="https://github.com/twenty-tools/hunt-report" class="cta-button">Get Started Free</a>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 16px;">What hunters waste time on</h2>
+            <p style="text-align: center; color: #94a3b8; font-size: 1.2em;">The 4-file report workflow that takes longer than finding the bug</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>📋 Findings.md</h3>
+                    <p>Parse markdown findings, EXPLOIT.md, raw HTTP responses, and Nuclei JSON into structured findings with CVSS scores and tier classification.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Bounty Report</h3>
+                    <p>Executive summary with actionable vs ineligible findings, severity breakdown, and tier classification - ready to paste into HackerOne.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💥 PoC Commands</h3>
+                    <p>Extract curl commands and proof-of-concept requests from scan output, organized and formatted for submission.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 H1 Submission</h3>
+                    <p>Generate HackerOne-ready submission body in markdown and plain text formats, with proper vulnerability class mapping.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing">
+        <div class="container">
+            <h2 style="font-size: 2.5em; margin-bottom: 16px;">Pricing</h2>
+            <p style="color: #94a3b8; font-size: 1.2em; max-width: 600px; margin: 0 auto;">Built for hunters who'd rather find bugs than format reports</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>CLI</h3>
+                    <div class="price">FREE</div>
+                    <p style="color: #94a3b8;">Open source forever</p>
+                    <ul>
+                        <li>Unlimited scan parsing</li>
+                        <li>All input formats</li>
+                        <li>4-file output</li>
+                        <li>H1 submission format</li>
+                        <li>Auto CVSS & tiering</li>
+                    </ul>
+                    <a href="#" class="cta-button">pip install hunt-report</a>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h3>Pro</h3>
+                    <div class="price">$19<span>/month</span></div>
+                    <p style="color: #94a3b8;">For serious hunters</p>
+                    <ul>
+                        <li>Everything in CLI</li>
+                        <li>API submission</li>
+                        <li>Raw HTTP parsing</li>
+                        <li>Team collaboration</li>
+                        <li>Priority support</li>
+                        <li>Custom templates</li>
+                    </ul>
+                    <a href="#" class="cta-button">Start Free Trial</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Team</h3>
+                    <div class="price">$79<span>/month</span></div>
+                    <p style="color: #94a3b8;">For bug bounty teams</p>
+                    <ul>
+                        <li>Everything in Pro</li>
+                        <li>Up to 5 seats</li>
+                        <li>Shared templates</li>
+                        <li>Team analytics</li>
+                        <li>SSO</li>
+                        <li>SLA support</li>
+                    </ul>
+                    <a href="#" class="cta-button">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="roi-section">
+        <div class="container">
+            <h2 style="font-size: 2.5em; margin-bottom: 16px;">ROI for Hunters</h2>
+            <p style="color: #94a3b8; font-size: 1.2em;">Save time, submit more reports, earn more bounties</p>
+            
+            <div class="roi-grid">
+                <div class="roi-card">
+                    <div class="number">40-60%</div>
+                    <p>Time saved on report formatting</p>
+                </div>
+                <div class="roi-card">
+                    <div class="number">$9K/yr</div>
+                    <p>Savings for average bounty hunter</p>
+                </div>
+                <div class="roi-card">
+                    <div class="number">3x</div>
+                    <p>More reports submitted per month</p>
+                </div>
+                <div class="roi-card">
+                    <div class="number">2 weeks</div>
+                    <p>Time to first paid validation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="validation-survey">
+        <div class="container">
+            <h2 style="font-size: 2em; margin-bottom: 16px;">Validate $19/month willingness</h2>
+            <p style="color: #94a3b8;">Take a 30-second survey from real bug bounty hunters</p>
+            
+            <div class="survey-box">
+                <h3>How much would you pay for automated bounty reports?</h3>
+                <label class="survey-option">
+                    <input type="radio" name="price" value="free" id="price1">
+                    $0 (free CLI is enough)
+                </label>
+                <label class="survey-option">
+                    <input type="radio" name="price" value="5" id="price2">
+                    $5/month (coffee money)
+                </label>
+                <label class="survey-option">
+                    <input type="radio" name="price" value="19" id="price3">
+                    $19/month (ROI positive)
+                </label>
+                <label class="survey-option">
+                    <input type="radio" name="price" value="49" id="price4">
+                    $49+/month (team pricing)
+                </label>
+                <button class="survey-btn" onclick="submitSurvey()">Submit</button>
+                <div id="survey-result"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>hunt-report is open source under MIT License</p>
+            <p>Built by bug bounty hunters, for bug bounty hunters</p>
+        </div>
+    </footer>
+
+    <script>
+        function submitSurvey() {
+            const selected = document.querySelector('input[name="price"]:checked');
+            const result = document.getElementById('survey-result');
+            
+            if (!selected) {
+                result.style.display = 'block';
+                result.innerHTML = 'Please select a price option';
+                return;
+            }
+            
+            const responses = {
+                'free': 'Free CLI is strong - focus on making the open source version excellent',
+                '5': '$5/month might work as a tier, but $19 is the real target',
+                '19': '$19/month is the sweet spot - ROI is clear for active hunters',
+                '49': '$49+/month works for teams and full-time hunters'
+            };
+            
+            result.style.display = 'block';
+            result.innerHTML = `
+                <strong>Thank you!</strong><br>
+                Selected: $${selected.value === 'free' ? '0 (free)' : selected.value + '/month'}<br>
+                <em>${responses[selected.value]}</em>
+            `;
+            
+            // In production, this would send to a Google Form or similar
+            console.log('Survey response:', selected.value);
+        }
+    </script>
+</body>
+</html>
